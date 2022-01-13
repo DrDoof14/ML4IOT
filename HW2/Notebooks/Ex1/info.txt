@@ -1,1 +1,1 @@
-
+The LSTM model need some alterations, it doesn't completely work. </br>
