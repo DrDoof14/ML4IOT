@@ -54,8 +54,8 @@ filenames = tf.random.shuffle(filenames)
 num_samples = len(filenames)
 LABELS = ['stop', 'up', 'yes', 'right', 'left', 'no', 'down', 'go']
 total = 8000
-train_files = open('./kws_train_split(new).txt', 'r')
-test_files = open('./kws_test_split(new).txt', 'r')
+train_files = open('./Dataset/kws_train_split(new).txt', 'r')
+test_files = open('./Dataset/kws_test_split(new).txt', 'r')
 
 list_train = []
 y_train = []
