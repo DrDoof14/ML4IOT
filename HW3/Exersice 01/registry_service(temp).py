@@ -11,7 +11,7 @@ class AddModel:
         self.model_name = model_name
         # __init__ should be removed
 
-    def POST(self):
+    def POST(self, *path, **query):
         save_path = './model' + self.model_name + '.tflite'
         with open(save_path, 'wb') as f:
             f.write(self.tflite_model)
