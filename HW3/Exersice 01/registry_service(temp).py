@@ -1,18 +1,17 @@
 import base64
-
 import cherrypy
 from os.path import isfile, join
 from os import listdir
-import tensorflow as tf
+
 
 class AddModel:
     exposed = True  # Needed for exposing the Web Services
 
-    def GET(self, **query):
+    def POST(self, **query):
         model = query.get('model')
         model_name = query.get('name')
         decoded_model = base64.b64decode(model)
-        path='./model/'+str(model_name)
+        path = './model/' + str(model_name)
         with open(path, 'wb') as f:
             f.write(decoded_model)
 
@@ -22,8 +21,8 @@ class ListModels:
 
     def GET(self):
         models_path = './model'
-        onlyfiles = [f for f in listdir(models_path) if isfile(join(models_path, f))]
-        print(onlyfiles)
+        onlyFiles = [f for f in listdir(models_path) if isfile(join(models_path, f))]
+        print(onlyFiles)
 
 
 class Predict:
