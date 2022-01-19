@@ -6,15 +6,14 @@ from os import listdir
 class AddModel:
     exposed = True  # Needed for exposing the Web Services
 
-    def __init__(self, tflite_model, model_name):
-        self.tflite_model = tflite_model
-        self.model_name = model_name
-        # __init__ should be removed
-
-    def POST(self, *path, **query):
-        save_path = './model' + self.model_name + '.tflite'
-        with open(save_path, 'wb') as f:
-            f.write(self.tflite_model)
+    def GET(self, *path, **query):
+        # if path[0] == 'add':
+        #     save_path = './model' + self.model_name + '.tflite'
+            # with open(save_path, 'wb') as f:
+            #     f.write(self.tflite_model)
+        print(path)
+        # else:
+        #     raise cherrypy.HTTPError(400, 'path is not correct')
 
 
 class ListModels:
@@ -40,7 +39,7 @@ if __name__ == '__main__':
             'tools.sessions.on': True,
         }
     }
-    cherrypy.tree.mount(AddModel, '/add')
+    cherrypy.tree.mount(AddModel(), '/add',conf)
     cherrypy.tree.mount(ListModels, '/list')
     cherrypy.tree.mount(Predict, '/predict')
 
