@@ -1,19 +1,20 @@
+import base64
+
 import cherrypy
 from os.path import isfile, join
 from os import listdir
-
+import tensorflow as tf
 
 class AddModel:
     exposed = True  # Needed for exposing the Web Services
 
-    def GET(self, *path, **query):
-        # if path[0] == 'add':
-        #     save_path = './model' + self.model_name + '.tflite'
-            # with open(save_path, 'wb') as f:
-            #     f.write(self.tflite_model)
-        print(path)
-        # else:
-        #     raise cherrypy.HTTPError(400, 'path is not correct')
+    def GET(self, **query):
+        model = query.get('model')
+        model_name = query.get('name')
+        decoded_model = base64.b64decode(model)
+        path='./model/'+str(model_name)
+        with open(path, 'wb') as f:
+            f.write(decoded_model)
 
 
 class ListModels:
@@ -28,7 +29,7 @@ class ListModels:
 class Predict:
     exposed = True  # Needed for exposing the Web Services
 
-    print('Nothing')
+    # print('Nothing')
 
 
 if __name__ == '__main__':
@@ -39,9 +40,9 @@ if __name__ == '__main__':
             'tools.sessions.on': True,
         }
     }
-    cherrypy.tree.mount(AddModel(), '/add',conf)
-    cherrypy.tree.mount(ListModels, '/list')
-    cherrypy.tree.mount(Predict, '/predict')
+    cherrypy.tree.mount(AddModel(), '/add', conf)
+    cherrypy.tree.mount(ListModels, '/list', conf)
+    cherrypy.tree.mount(Predict, '/predict', conf)
 
     # To start cherrypy engine
     cherrypy.engine.start()
