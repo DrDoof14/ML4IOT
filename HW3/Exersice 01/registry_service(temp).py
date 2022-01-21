@@ -48,8 +48,8 @@ class Predict:
 
     def PUT(self, **query):
         model_name = query.get('model')
-        tthres = query.get('tthres')
-        hthres = query.get('hthres')
+        tthres = float(query.get('tthres'))
+        hthres = float(query.get('hthres'))
         models_path = './model/' + model_name
         interpreter = tf.lite.Interpreter(model_path=models_path)
         interpreter.allocate_tensors()
