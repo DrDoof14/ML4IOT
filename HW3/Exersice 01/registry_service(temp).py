@@ -1,31 +1,34 @@
 import base64
+import json
+
 import cherrypy
 from os.path import isfile, join
 from os import listdir
-import adafruit_dht
+# import adafruit_dht
 import tensorflow as tf
 import numpy as np
 # import test.mosquitto.org as broker
-import datetime
 import time
-from board import D4
+# from board import D4
 
 
 class AddModel:
     exposed = True  # Needed for exposing the Web Services
 
     def POST(self, **query):
-        if len(query) != 2:
-            raise cherrypy.HTTPError(400, 'Wrong query')
+        # if len(query) != 2:
+        #     raise cherrypy.HTTPError(400, 'Wrong query')
 
-        if type(query.get('model')) != 'bytes':
-            raise cherrypy.HTTPError(400, 'Model type is not bytes')
+        # if type(query.get('model')) != 'bytes':
+        #     raise cherrypy.HTTPError(400, 'Model type is not bytes')
+        #
+        # if not query.get('name').endswith('.tflite'):
+        #     raise cherrypy.HTTPError(400, 'The name extention should be tflite')
 
-        if not query.get('name').endswith('.tflite'):
-            raise cherrypy.HTTPError(400, 'The name extention should be tflite')
-
-        model = query.get('model')
-        model_name = query.get('name')
+        body = cherrypy.request.body.read()
+        body = json.loads(body)
+        model = body.get('model')
+        model_name = body.get('name')
         decoded_model = base64.b64decode(model)
         path = './model/' + str(model_name)
         with open(path, 'wb') as f:
@@ -91,7 +94,7 @@ if __name__ == '__main__':
         }
     }
     cherrypy.tree.mount(AddModel(), '/add', conf)
-    cherrypy.tree.mount(ListModels(), '/list', conf)
+    cherrypy.tree.mount(ListModels, '/list', conf)
     cherrypy.tree.mount(Predict(), '/predict', conf)
 
     # To start cherrypy engine
