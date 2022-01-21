@@ -13,10 +13,30 @@ with open(model_name, 'rb') as fp:
 
 body_dict = {'model': model_base64, 'name': 'cnn.tflite'}
 
-json_body=json.dumps(list(body_dict))
+json_body = json.dumps(list(body_dict))
 r = requests.post(url_add, json=json_body)
 if r.status_code == 200:
     body = r.json()
     print(body)
 else:
-    print('Error:', r.status_code)
+    print('Error:', r.json())
+
+url_list = url + '/list'
+
+req = requests.get(url_list)
+
+if req.status_code == 200:
+    body = req.text
+    print(body)
+else:
+    print('Error:', req.text)
+
+tthres = 0.1
+hthres = 0.2
+url_predict = 'http://0.0.0.0:8080/{}?model={}&tthres={}&hthres={}'.format('predict', model_name, tthres, hthres)
+req = requests.put(url_predict)
+if req.status_code == 200:
+    body = req.text
+    print(body)
+else:
+    print('Error:', req.text)
