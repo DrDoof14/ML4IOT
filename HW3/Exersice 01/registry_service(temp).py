@@ -1,9 +1,10 @@
 import base64
+from datetime import datetime
 import json
-from MQTT.publisher import Alert
 import cherrypy
 from os.path import isfile, join
 from os import listdir
+from MQTT.DoSomething import DoSomething
 # import adafruit_dht
 import tensorflow as tf
 import numpy as np
@@ -50,11 +51,13 @@ class ListModels:
 class Predict:
     exposed = True  # Needed for exposing the Web Services
 
-    def GET(self, **query):
+    def PUT(self, **query):
         model_name = query.get('model')
         tthres = float(query.get('tthres'))
         hthres = float(query.get('hthres'))
         models_path = './model/' + model_name
+        publisher = DoSomething("publisher 1")
+        publisher.run()
         # interpreter = tf.lite.Interpreter(model_path=models_path)
         # interpreter.allocate_tensors()
         # input_details = interpreter.get_input_details()
@@ -76,7 +79,7 @@ class Predict:
             # print(predict_result)
             # del temperature_list[0]
             # del humidity_list[0]
-            time.sleep(2)
+            time.sleep(10)
             # temperature_list.append(dht_device.temperature)
             # humidity_list.append(dht_device.humidity)
             # send alert for Tempreture & Humidity
@@ -84,10 +87,17 @@ class Predict:
             #     Alert(True, predicted=predict_result[0][0], actual=temperature_list[5])
             # if abs(predict_result[0][1] - humidity_list[5]) > hthres:
             #     Alert(False, predicted=predict_result[0][1], actual=humidity_list[5])
+            # MQTT CODE
+            now = datetime.now()
+            dt_string = now.strftime("(%d/%m/%Y %H:%M:%S)")
             if abs(10.1 - 9) > tthres:
-                Alert(type_alert='Temperature', predicted=10.1, actual=9)
+                msg = {'datTime': dt_string, 'Quantity': 'Temperature', 'Predicted': 10.1, 'Actual': 9}
+                # Alert(type_alert='Temperature', predicted=10.1, actual=9)
             if abs(11 - 15) > hthres:
-                Alert(type_alert='Humidity', predicted=11, actual=15)
+                msg = {'datTime': dt_string, 'Quantity': 'Humidity', 'Predicted': 11, 'Actual': 15}
+                # Alert(type_alert='Humidity', predicted=11, actual=15)
+            publisher.myMqttClient.myPublish('aaa', json.dumps(msg))
+
 
 if __name__ == '__main__':
     # conf probably needs modification
