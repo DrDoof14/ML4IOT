@@ -1,6 +1,6 @@
 import base64
 import json
-
+from MQTT.publisher import Alert
 import cherrypy
 from os.path import isfile, join
 from os import listdir
@@ -9,6 +9,8 @@ import tensorflow as tf
 import numpy as np
 # import test.mosquitto.org as broker
 import time
+
+
 # from board import D4
 
 
@@ -54,36 +56,39 @@ class Predict:
         tthres = float(query.get('tthres'))
         hthres = float(query.get('hthres'))
         models_path = './model/' + model_name
-        interpreter = tf.lite.Interpreter(model_path=models_path)
-        interpreter.allocate_tensors()
-        input_details = interpreter.get_input_details()
-        output_details = interpreter.get_output_details()
-        dht_device = adafruit_dht.DHT11(D4)
+        # interpreter = tf.lite.Interpreter(model_path=models_path)
+        # interpreter.allocate_tensors()
+        # input_details = interpreter.get_input_details()
+        # output_details = interpreter.get_output_details()
+        # dht_device = adafruit_dht.DHT11(D4)
         temperature_list = []
         humidity_list = []
-        for i in range(6):
-            temperature_list.append(dht_device.temperature)
-            humidity_list.append(dht_device.humidity)
-            if i != 5:
-                time.sleep(1)
+        # for i in range(6):
+        #     temperature_list.append(dht_device.temperature)
+        #     humidity_list.append(dht_device.humidity)
+        #     if i != 5:
+        #         time.sleep(1)
         while True:
-            input_data = np.array([temperature_list, humidity_list], dtype=np.float32)
-            input_data = input_data.reshape(1, 6, 2)
-            interpreter.set_tensor(input_details[0]['index'], input_data)
-            interpreter.invoke()
-            predict_result = interpreter.get_tensor(output_details[0]['index'])
-            print(predict_result)
-            del temperature_list[0]
-            del humidity_list[0]
-            time.sleep(1)
-            temperature_list.append(dht_device.temperature)
-            humidity_list.append(dht_device.humidity)
+            # input_data = np.array([temperature_list, humidity_list], dtype=np.float32)
+            # input_data = input_data.reshape(1, 6, 2)
+            # interpreter.set_tensor(input_details[0]['index'], input_data)
+            # interpreter.invoke()
+            # predict_result = interpreter.get_tensor(output_details[0]['index'])
+            # print(predict_result)
+            # del temperature_list[0]
+            # del humidity_list[0]
+            time.sleep(2)
+            # temperature_list.append(dht_device.temperature)
+            # humidity_list.append(dht_device.humidity)
             # send alert for Tempreture & Humidity
-            if abs(predict_result[0][0] - temperature_list[5]) > tthres:
-                print("Temperature alert")
-            if abs(predict_result[0][1] - humidity_list[5]) > hthres:
-                print("Humidity alert")
-
+            # if abs(predict_result[0][0] - temperature_list[5]) > tthres:
+            #     Alert(True, predicted=predict_result[0][0], actual=temperature_list[5])
+            # if abs(predict_result[0][1] - humidity_list[5]) > hthres:
+            #     Alert(False, predicted=predict_result[0][1], actual=humidity_list[5])
+            if abs(10.1 - 9) > tthres:
+                Alert(type_alert='Temperature', predicted=10.1, actual=9)
+            if abs(11 - 15) > hthres:
+                Alert(type_alert='Humidity', predicted=11, actual=15)
 
 if __name__ == '__main__':
     # conf probably needs modification
