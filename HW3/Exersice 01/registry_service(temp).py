@@ -11,7 +11,6 @@ import numpy as np
 import time
 
 
-# from board import D4
 
 
 class AddModel:
@@ -51,7 +50,7 @@ class ListModels:
 class Predict:
     exposed = True  # Needed for exposing the Web Services
 
-    def PUT(self, **query):
+    def GET(self, **query):
         model_name = query.get('model')
         tthres = float(query.get('tthres'))
         hthres = float(query.get('hthres'))

@@ -5,5 +5,5 @@ import time
 def get_Alert():
     test = DoSomething("subscriber 1")
     test.run()
-    test.myMqttClient.mySubscribe('')
+    test.myMqttClient.mySubscribe('sdfsdf')
     test.end()
