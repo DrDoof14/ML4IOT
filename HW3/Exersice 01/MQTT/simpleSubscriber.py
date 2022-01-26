@@ -32,16 +32,18 @@ class MySubscriber:
 		def myOnConnect (self, paho_mqtt, userdata, flags, rc):
 			print ("Connected to %s with result code: %d" % (self.messageBroker, rc))
 
-		def myOnMessageReceived (self, paho_mqtt , userdata, msg):
+		def myOnMessageReceived (self, msg):
 			# A new message is received
-			print ("Topic:'" + msg.topic+"', QoS: '"+str(msg.qos)+"' Message: '"+str(msg.payload) + "'")
+			# print ("Topic:'" + msg.topic+"', QoS: '"+str(msg.qos)+"' Message: '"+str(msg.payload) + "'")
+			print(str(msg.payload))
+			print(msg.payload)
 
 
 
 if __name__ == "__main__":
 	test = MySubscriber("MySubscriber 1")
 	test.start()
-	test.myOnMessageReceived()
+	test.myOnMessageReceived('fdssfdfsd')
 	a = 0
 	while (a < 30):
 		a += 1

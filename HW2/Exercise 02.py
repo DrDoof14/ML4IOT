@@ -73,7 +73,7 @@ for i in test_files:
     tmp = i.replace('.\\data\\mini_speech_commands\\', '')
     loc_slash = tmp.find('\\')
     y_test.append(LABELS.index(tmp[:loc_slash]))
-test_files = tf.convert_to_tensor([s.rstrip() for s in test_list])
+    test_files = tf.convert_to_tensor([s.rstrip() for s in test_list])
 y_test = np.array(y_test)
 
 
