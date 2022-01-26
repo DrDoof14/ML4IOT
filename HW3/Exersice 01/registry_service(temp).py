@@ -12,8 +12,6 @@ import numpy as np
 import time
 
 
-
-
 class AddModel:
     exposed = True  # Needed for exposing the Web Services
 
@@ -29,6 +27,7 @@ class AddModel:
 
         body = cherrypy.request.body.read()
         body = json.loads(body)
+        print(body)
         model = body.get('model')
         model_name = body.get('name')
         decoded_model = base64.b64decode(model)

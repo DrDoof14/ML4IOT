@@ -36,7 +36,7 @@ if __name__ == "__main__":
 	test.start()
 
 	a = 0
-	while (a < 20):
+	while (a < 30):
 		message = ('whatever message, also in JSON %d' % (a))
 		print ("Publishing: '%s'" % (message))
 		test.myPublish ('/this/is/my/topic', message) 	
