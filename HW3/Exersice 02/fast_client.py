@@ -3,6 +3,7 @@ import requests
 import tensorflow as tf
 import numpy as np
 from scipy.special import softmax
+import time 
 
 url = 'http://127.0.0.1:8080/predict'
 sampling_rate = 16000
@@ -60,15 +61,19 @@ input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 predicted_labels = []
 CommunicationCost = 0
+total_time=0
 for i in range(len(test_files)):
     audio = tf.io.read_file(test_files[i])
     tf_audio, _ = tf.audio.decode_wav(audio)
+    start=time.time()
     interpreter.set_tensor(input_details[0]['index'], mfcc(tf_audio))
     interpreter.invoke()
     predict_result = interpreter.get_tensor(output_details[0]['index'])
     predicted_label = np.argmax(predict_result)
     softmax_predict_result = softmax(predict_result[0])
     max_prediction = max(list(map(lambda x: float("{:.8f}".format(float(x * 100))), softmax_predict_result)))
+    end=time.time()
+    total_time+=end-start
     if max_prediction < 65:
         t = tf_audio.numpy().tolist()
         msg = {'Audio': t}
@@ -94,4 +99,5 @@ print("CommunicationCost: {} MB".format(CommunicationCost * 0.000001, ".3f"))
 predicted_labels = np.array(predicted_labels)
 acc = tf.keras.metrics.Accuracy()
 acc.update_state(predicted_labels, actual_labels)
-print(acc.result().numpy())
+print("Accuracy: {}".format(acc.result().numpy()))
+print("Total Inference time: {} ms".format(int(round(total_time * 1000))))
