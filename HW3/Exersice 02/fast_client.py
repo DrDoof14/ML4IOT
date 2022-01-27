@@ -34,11 +34,11 @@ actual_label = np.array(actual_label)
 
 def mfcc(tf_audio):
     # tf_audio, rate = tf.audio.decode_wav(audio)
-    tf_audio = tf.squeeze(tf_audio, 1)
-    # zero_padding = tf.zeros([sampling_rate] - tf.shape(audio), dtype=tf.float32)
-    # audio = tf.concat([audio, zero_padding], 0)
-    # audio.set_shape([sampling_rate])
-    stft = tf.signal.stft(tf_audio, frame_length, frame_step, fft_length=frame_length)
+    audio = tf.squeeze(tf_audio, 1)
+    zero_padding = tf.zeros([sampling_rate] - tf.shape(audio), dtype=tf.float32)
+    audio = tf.concat([audio, zero_padding], 0)
+    audio.set_shape([sampling_rate])
+    stft = tf.signal.stft(audio, frame_length, frame_step, fft_length=frame_length)
     spectrogram = tf.abs(stft)
     linear_to_mel_weight_matrix = tf.signal.linear_to_mel_weight_matrix(
         num_mel_bins, num_spectrogram_bins, sampling_rate, lower_freq, upper_freq)
@@ -63,32 +63,20 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 predicted_labels = []
+count = 0
 for i in range(len(test_files)):
-    print(i)
     audio = tf.io.read_file(test_files[i])
     tf_audio, _ = tf.audio.decode_wav(audio)
-    # print(mfcc(audio).shape)
+    count = count + 1
     interpreter.set_tensor(input_details[0]['index'], mfcc(tf_audio))
     interpreter.invoke()
     predict_result = interpreter.get_tensor(output_details[0]['index'])
     predicted_label = np.argmax(predict_result)
-    # print(predict_result[0])
-    # print(predicted_label)
     softmax_predict_result = softmax(predict_result[0])
     max_prediction = max(list(map(lambda x: float("{:.8f}".format(float(x * 100))), softmax_predict_result)))
-    # print(max_prediction)
     if max_prediction < 65:
-        # print('sepehr')
-        print(tf_audio)
-        # print(type(tf_audio.numpy()[0]))
-
-        # exit()
-        # print(t/f_audio)
-        t=tf_audio.numpy().tolist()
-        # print(type(t))
-
+        t = tf_audio.numpy().tolist()
         msg = {'Audio': t}
-        # print(type(audiob64.decode()))
         try:
             req = requests.put(url, json=msg)
         except requests.exceptions.Timeout:
@@ -98,10 +86,11 @@ for i in range(len(test_files)):
         except requests.exceptions.RequestException:
             print('WE FUCKED UP !!')
         if req.status_code == 200:
-            body = req.text
-            print("body",body)
-            exit()
+            body = req.json()
+            print(body.get('predicted_label'))
         else:
             print('Error:', req.text)
     else:
         predicted_labels.append(predicted_label)
+
+print(count)
