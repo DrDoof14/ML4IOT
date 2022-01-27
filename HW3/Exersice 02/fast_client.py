@@ -1,7 +1,4 @@
-import base64
-import json
-import wave
-
+import sys
 import requests
 import tensorflow as tf
 import numpy as np
@@ -24,16 +21,15 @@ seed = 42
 tf.random.set_seed(seed)
 np.random.seed(seed)
 
-actual_label = []
+actual_labels = []
 for i in test_files:
     tmp = i.replace('./data/mini_speech_commands/', '')
     loc_slash = tmp.find('/')
-    actual_label.append(LABELS.index(tmp[:loc_slash]))
-actual_label = np.array(actual_label)
+    actual_labels.append(LABELS.index(tmp[:loc_slash]))
+actual_labels = np.array(actual_labels)
 
 
 def mfcc(tf_audio):
-    # tf_audio, rate = tf.audio.decode_wav(audio)
     audio = tf.squeeze(tf_audio, 1)
     zero_padding = tf.zeros([sampling_rate] - tf.shape(audio), dtype=tf.float32)
     audio = tf.concat([audio, zero_padding], 0)
@@ -63,11 +59,10 @@ interpreter.allocate_tensors()
 input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 predicted_labels = []
-count = 0
+CommunicationCost = 0
 for i in range(len(test_files)):
     audio = tf.io.read_file(test_files[i])
     tf_audio, _ = tf.audio.decode_wav(audio)
-    count = count + 1
     interpreter.set_tensor(input_details[0]['index'], mfcc(tf_audio))
     interpreter.invoke()
     predict_result = interpreter.get_tensor(output_details[0]['index'])
@@ -77,20 +72,26 @@ for i in range(len(test_files)):
     if max_prediction < 65:
         t = tf_audio.numpy().tolist()
         msg = {'Audio': t}
+        CommunicationCost += sys.getsizeof(msg)
         try:
             req = requests.put(url, json=msg)
+            if req.status_code == 200:
+                body = req.json()
+                predicted_labels.append(int(body.get('predicted_label')))
+            else:
+                print('Error:', req.text)
         except requests.exceptions.Timeout:
             print('Timeout !!')
         except requests.exceptions.TooManyRedirects:
             print('Bad URL!!!')
         except requests.exceptions.RequestException:
             print('WE FUCKED UP !!')
-        if req.status_code == 200:
-            body = req.json()
-            print(body.get('predicted_label'))
-        else:
-            print('Error:', req.text)
+
     else:
         predicted_labels.append(predicted_label)
 
-print(count)
+print("CommunicationCost: {} MB".format(CommunicationCost * 0.000001, ".3f"))
+predicted_labels = np.array(predicted_labels)
+acc = tf.keras.metrics.Accuracy()
+acc.update_state(predicted_labels, actual_labels)
+print(acc.result().numpy())
