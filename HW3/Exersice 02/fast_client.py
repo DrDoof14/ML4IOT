@@ -78,13 +78,19 @@ for i in range(len(test_files)):
     max_prediction = max(list(map(lambda x: float("{:.8f}".format(float(x * 100))), softmax_predict_result)))
     # print(max_prediction)
     if max_prediction < 65:
-        audiob64=base64.b64encode(tf_audio)
+        # print('sepehr')
+        # print(tf_audio.numpy())
+        # print(type(tf_audio.numpy()[0]))
+
         # print(t/f_audio)
+        t=tf_audio.numpy().tolist()
+        # print(type(t))
         # exit()
-        msg = {'Audio': audiob64.decode()}
+
+        msg = {'Audio': t}
         # print(type(audiob64.decode()))
         try:
-            req = requests.put(url, json.dumps(msg))
+            req = requests.put(url, json=)
         except requests.exceptions.Timeout:
             print('Timeout !!')
         except requests.exceptions.TooManyRedirects:
@@ -93,7 +99,7 @@ for i in range(len(test_files)):
             print('WE FUCKED UP !!')
         if req.status_code == 200:
             body = req.text
-            print(body)
+            print("body",body)
             exit()
         else:
             print('Error:', req.text)
