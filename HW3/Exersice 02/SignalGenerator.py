@@ -17,12 +17,12 @@ def mfcc(audio):
     tf.random.set_seed(seed)
     np.random.seed(seed)
 
-    tf_audio, rate = tf.audio.decode_wav(audio)
-    tf_audio = tf.squeeze(tf_audio, 1)
-    zero_padding = tf.zeros([sampling_rate] - tf.shape(audio), dtype=tf.float32)
-    audio = tf.concat([audio, zero_padding], 0)
-    audio.set_shape([sampling_rate])
-    stft = tf.signal.stft(tf_audio, frame_length, frame_step, fft_length=frame_length)
+    # tf_audio, rate = tf.audio.decode_wav(audio)
+    tf_audio = tf.squeeze(audio, 1)
+    # zero_padding = tf.zeros([sampling_rate] - tf.shape(audio), dtype=tf.float32)
+    # audio = tf.concat([audio, zero_padding], 0)
+    # audio.set_shape([sampling_rate])
+    stft = tf.signal.stft(audio, frame_length, frame_step, fft_length=frame_length)
     spectrogram = tf.abs(stft)
     linear_to_mel_weight_matrix = tf.signal.linear_to_mel_weight_matrix(
         num_mel_bins, num_spectrogram_bins, sampling_rate, lower_freq, upper_freq)

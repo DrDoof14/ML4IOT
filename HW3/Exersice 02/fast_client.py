@@ -1,9 +1,13 @@
+import base64
+import json
+import wave
+
 import requests
 import tensorflow as tf
 import numpy as np
 from scipy.special import softmax
 
-url = 'http://127.0.0.1:8080'
+url = 'http://127.0.0.1:8080/predict'
 sampling_rate = 16000
 frame_length = int(0.04 * sampling_rate)
 frame_step = int(0.02 * sampling_rate)
@@ -28,9 +32,12 @@ for i in test_files:
 actual_label = np.array(actual_label)
 
 
-def mfcc(audio):
-    tf_audio, rate = tf.audio.decode_wav(audio)
+def mfcc(tf_audio):
+    # tf_audio, rate = tf.audio.decode_wav(audio)
     tf_audio = tf.squeeze(tf_audio, 1)
+    # zero_padding = tf.zeros([sampling_rate] - tf.shape(audio), dtype=tf.float32)
+    # audio = tf.concat([audio, zero_padding], 0)
+    # audio.set_shape([sampling_rate])
     stft = tf.signal.stft(tf_audio, frame_length, frame_step, fft_length=frame_length)
     spectrogram = tf.abs(stft)
     linear_to_mel_weight_matrix = tf.signal.linear_to_mel_weight_matrix(
@@ -57,23 +64,38 @@ input_details = interpreter.get_input_details()
 output_details = interpreter.get_output_details()
 predicted_labels = []
 for i in range(len(test_files)):
+    print(i)
     audio = tf.io.read_file(test_files[i])
-    interpreter.set_tensor(input_details[0]['index'], mfcc(audio))
+    tf_audio, _ = tf.audio.decode_wav(audio)
+    # print(mfcc(audio).shape)
+    interpreter.set_tensor(input_details[0]['index'], mfcc(tf_audio))
     interpreter.invoke()
     predict_result = interpreter.get_tensor(output_details[0]['index'])
     predicted_label = np.argmax(predict_result)
-    print(predict_result[0])
-    print(predicted_label)
+    # print(predict_result[0])
+    # print(predicted_label)
     softmax_predict_result = softmax(predict_result[0])
     max_prediction = max(list(map(lambda x: float("{:.8f}".format(float(x * 100))), softmax_predict_result)))
-    print(max_prediction)
+    # print(max_prediction)
     if max_prediction < 65:
-        msg = {'Audio': audio}
-        req = requests.post(url, json=msg)
+        audiob64=base64.b64encode(tf_audio)
+        # print(t/f_audio)
+        # exit()
+        msg = {'Audio': audiob64.decode()}
+        # print(type(audiob64.decode()))
+        try:
+            req = requests.put(url, json.dumps(msg))
+        except requests.exceptions.Timeout:
+            print('Timeout !!')
+        except requests.exceptions.TooManyRedirects:
+            print('Bad URL!!!')
+        except requests.exceptions.RequestException:
+            print('WE FUCKED UP !!')
         if req.status_code == 200:
-            body = req.json()
+            body = req.text
             print(body)
+            exit()
         else:
-            print('Error:', req.json())
+            print('Error:', req.text)
     else:
         predicted_labels.append(predicted_label)
