@@ -90,7 +90,7 @@ for i in range(len(test_files)):
         except requests.exceptions.TooManyRedirects:
             print('Bad URL!!!')
         except requests.exceptions.RequestException:
-            print('WE FUCKED UP !!')
+            print('Big Problem !!')
 
     else:
         predicted_labels.append(predicted_label)
