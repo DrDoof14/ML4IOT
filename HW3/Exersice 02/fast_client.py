@@ -79,18 +79,18 @@ for i in range(len(test_files)):
     # print(max_prediction)
     if max_prediction < 65:
         # print('sepehr')
-        # print(tf_audio.numpy())
+        print(tf_audio)
         # print(type(tf_audio.numpy()[0]))
 
+        # exit()
         # print(t/f_audio)
         t=tf_audio.numpy().tolist()
         # print(type(t))
-        # exit()
 
         msg = {'Audio': t}
         # print(type(audiob64.decode()))
         try:
-            req = requests.put(url, json=)
+            req = requests.put(url, json=msg)
         except requests.exceptions.Timeout:
             print('Timeout !!')
         except requests.exceptions.TooManyRedirects:
