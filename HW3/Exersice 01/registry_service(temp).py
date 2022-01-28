@@ -8,7 +8,9 @@ from MQTT.DoSomething import DoSomething
 import adafruit_dht
 import tensorflow as tf
 import numpy as np
-import test.mosquitto.org as broker
+import adafruit_dht
+from board import D4
+#import test.mosquitto.org as broker
 import time
 
 
@@ -93,6 +95,8 @@ class Predict: #DONE!
 
 if __name__ == '__main__':
     # conf probably needs modification
+
+
     conf = {
         '/': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
@@ -102,7 +106,8 @@ if __name__ == '__main__':
     cherrypy.tree.mount(AddModel(), '/add', conf)
     cherrypy.tree.mount(ListModels, '/list', conf)
     cherrypy.tree.mount(Predict(), '/predict', conf)
-
+    cherrypy.config.update({'server.socket_host': '192.168.1.145'})
+    cherrypy.config.update({'server.socket_port': 8080})
     # To start cherrypy engine
     cherrypy.engine.start()
     cherrypy.engine.block()
