@@ -17,6 +17,8 @@ num_spectrogram_bins = frame_length // 2 + 1
 model_path = "../Prerequisite/kws_dscnn_True.tflite"
 test_files = list(open('../Prerequisite/kws_test_split.txt', 'r'))
 test_files = [s.rstrip() for s in test_files]
+linear_to_mel_weight_matrix = tf.signal.linear_to_mel_weight_matrix(
+        num_mel_bins, num_spectrogram_bins, sampling_rate, lower_freq, upper_freq)
 LABELS = ['stop', 'up', 'yes', 'right', 'left', 'no', 'down', 'go']
 seed = 42
 tf.random.set_seed(seed)
@@ -32,13 +34,12 @@ actual_labels = np.array(actual_labels)
 
 def mfcc(tf_audio):
     audio = tf.squeeze(tf_audio, 1)
-    zero_padding = tf.zeros([sampling_rate] - tf.shape(audio), dtype=tf.float32)
-    audio = tf.concat([audio, zero_padding], 0)
-    audio.set_shape([sampling_rate])
+    if tf.shape(audio)!=16000:
+        zero_padding = tf.zeros([sampling_rate] - tf.shape(audio), dtype=tf.float32)
+        audio = tf.concat([audio, zero_padding], 0)
+        audio.set_shape([sampling_rate])
     stft = tf.signal.stft(audio, frame_length, frame_step, fft_length=frame_length)
     spectrogram = tf.abs(stft)
-    linear_to_mel_weight_matrix = tf.signal.linear_to_mel_weight_matrix(
-        num_mel_bins, num_spectrogram_bins, sampling_rate, lower_freq, upper_freq)
     mel_spectrogram = tf.tensordot(spectrogram, linear_to_mel_weight_matrix, 1)
     log_mel_spectrogram = tf.math.log(mel_spectrogram + 1.e-6)
     mfccs = tf.signal.mfccs_from_log_mel_spectrograms(log_mel_spectrogram)
