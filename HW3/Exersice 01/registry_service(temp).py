@@ -4,11 +4,10 @@ import json
 import cherrypy
 from os.path import isfile, join
 from os import listdir
-from MQTT.DoSomething import DoSomething
-# import adafruit_dht
+from DoSomething import DoSomething
+import adafruit_dht
 import tensorflow as tf
 import numpy as np
-# import test.mosquitto.org as broker
 import time
 
 
@@ -49,12 +48,13 @@ class ListModels:
 
 class Predict:
     exposed = True  # Needed for exposing the Web Services
+
     def __init__(self):
         self.dht_device = adafruit_dht.DHT11(D4)
         self.publisher = DoSomething("publisher 1")
 
-
     def PUT(self, **query):
+        self.publisher.run()
         model_name = query.get('model')
         tthres = float(query.get('tthres'))
         hthres = float(query.get('hthres'))
@@ -87,11 +87,12 @@ class Predict:
             if abs(predict_result[0][0] - temperature_list[5]) > tthres:
                 msg = {'dateTime': dt_string, 'Quantity': 'Temperature', 'Predicted': predict_result[0][0],
                        'Actual': temperature_list[5]}
-                # Alert(type_alert='Temperature', predicted=10.1, actual=9)
+                self.publisher.myMqttClient.myPublish('ML4IOT', json.dumps(msg))
+
             if abs(predict_result[0][1] - humidity_list[5]) > hthres:
                 msg = {'dateTime': dt_string, 'Quantity': 'Humidity', 'Predicted': predict_result[0][1],
                        'Actual': humidity_list[5]}
-            self.publisher.myMqttClient.myPublish('ML4IOT', json.dumps(msg))
+                self.publisher.myMqttClient.myPublish('ML4IOT', json.dumps(msg))
 
 
 if __name__ == '__main__':
