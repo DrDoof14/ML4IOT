@@ -6,6 +6,7 @@ import datetime
 import time
 # import adafruit_dht
 import os
+import struct
 
 
 def norm(t, t_min, t_max):
@@ -50,20 +51,43 @@ else:
 
 with tf.io.TFRecordWriter(args.output) as writer:
     for row in new_csv:
-        posix_value = row[0]
-        temperature_value = row[1]
-        humidity_value = row[2]
-        print(type(temperature_value))
+        # bytes---------------------------------------------------------------
+        #         posix_value = row[0]
+        #         pos_byte = bytearray(struct.pack("f", posix_value))
+        #         pos_byte=bytes(pos_byte)
+
+        #         temperature_value = row[1]
+        #         temp_byte = bytearray(struct.pack("f", temperature_value))
+        #         temp_byte=bytes(temp_byte)
+
+        #         humidity_value = row[2]
+        #         hum_byte = bytearray(struct.pack("f", humidity_value))
+        #         hum_byte=bytes(hum_byte)
+
+        # float---------------------------------------------------------------------
+
+        #         posix_value = row[0]
+        #         temperature_value = row[1]
+        #         humidity_value = row[2]
+
+        # int------------------------------------------------------------------------------
+
+        posix_value = int(row[0])
+        temperature_value = int(row[1])
+        humidity_value = int(row[2])
         if args.normalize:
-            x_feature=tf.train.Feature(int64_list=tf.train.Int64List(value=[int(posix_value)]))
-            y_feature = tf.train.Feature(float_list=tf.train.FloatList(value=[temperature_value, humidity_value]))
-            mapping = {'integer': x_feature,'float': y_feature}
+
+            x_feature = tf.train.Feature(
+                int64_list=tf.train.Int64List(value=[posix_value, temperature_value, humidity_value]))
+            mapping = {'int': x_feature}  # we don't use the y_feature since we only have one datatype
+
+
+
         else:
             x_feature = tf.train.Feature(
-                int64_list=tf.train.Int64List(value=[int(temperature_value), int(humidity_value)]))
-            y_feature = tf.train.Feature(float_list=tf.train.FloatList(value=[posix_value]))
-            mapping = {'integer': x_feature,
-                       'float': y_feature}
+                int64_list=tf.train.Int64List(value=[posix_value, temperature_value, humidity_value]))
+            mapping = {'int': x_feature}  # we don't use the y_feature since we only have one datatype
+
         example = tf.train.Example(features=tf.train.Features(feature=mapping))
         writer.write(example.SerializeToString())
 
