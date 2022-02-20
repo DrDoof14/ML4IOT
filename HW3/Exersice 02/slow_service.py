@@ -21,6 +21,8 @@ class SLowService:
         self.upper_freq = 4000
         self.coefficients = 10
         self.num_spectrogram_bins = self.frame_length // 2 + 1
+        self.linear_to_mel_weight_matrix = tf.signal.linear_to_mel_weight_matrix(
+            self.num_mel_bins, self.num_spectrogram_bins, self.sampling_rate, self.lower_freq, self.upper_freq)
         seed = 42
         tf.random.set_seed(seed)
         np.random.seed(seed)
@@ -32,9 +34,8 @@ class SLowService:
         audio.set_shape([self.sampling_rate])
         stft = tf.signal.stft(audio, self.frame_length, self.frame_step, fft_length=self.frame_length)
         spectrogram = tf.abs(stft)
-        linear_to_mel_weight_matrix = tf.signal.linear_to_mel_weight_matrix(
-            self.num_mel_bins, self.num_spectrogram_bins, self.sampling_rate, self.lower_freq, self.upper_freq)
-        mel_spectrogram = tf.tensordot(spectrogram, linear_to_mel_weight_matrix, 1)
+
+        mel_spectrogram = tf.tensordot(spectrogram, self.linear_to_mel_weight_matrix, 1)
         log_mel_spectrogram = tf.math.log(mel_spectrogram + 1.e-6)
         mfccs = tf.signal.mfccs_from_log_mel_spectrograms(log_mel_spectrogram)
         mfccs = mfccs[..., :self.coefficients]
@@ -59,8 +60,8 @@ class SLowService:
 if __name__ == '__main__':
     # conf probably needs modification
     #have to find the IP for the device you are using as the server 
-    cherrypy.config.update({'server.socket_host': '192.168.1.127'})
-    cherrypy.config.update({'server.socket_port': 8080})
+    # cherrypy.config.update({'server.socket_host': '192.168.1.127'})
+    # cherrypy.config.update({'server.socket_port': 8080})
     conf = {
         '/': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
