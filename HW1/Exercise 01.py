@@ -18,37 +18,22 @@ parser.add_argument('--output', type=str, help='specify output file name with tf
 parser.add_argument('--normalize', action="store_true", help='for normalizing the humidity and temperature')
 args = parser.parse_args()
 
-# Code to get humidity & Tempreture from sendor and save in a CSV file
-# period = 60
-# freq = 5
-# num_samples = int(period // freq)
-# dht_device = adafruit_dht.DHT11(D4)
-# for i in range(num_samples):
-#     now = datetime.datetime.now()
-#     temperature = dht_device.temperature
-#     humidity = dht_device.humidity
-#     print('{:02}/{:02}/{:04},{:02}:{:02}:{:02},{:},{:}'.format(now.day, now.month, now.year, now.hour, now.minute,
-#                                                                now.second, temperature, humidity), file=fp)
-#     time.sleep(args.f)
-# file = pd.read_csv('rt.txt', header=None)
-# file.columns = ['date', 'time', 'temperature', 'humidity']
-# file.to_csv('rt.csv', index=None)
-
 cols = ['date', 'time']
 conv = pd.read_csv(args.input, usecols=cols).values  # reading the csv file
 
 # code to convert the date and time to POSIX fornmat
-timestamp = []
+timestampList = []
 for i in conv:
     temp = i[0] + ' ' + i[1]
     element = datetime.datetime.strptime(temp, "%d/%m/%Y %H:%M:%S")
-    tmp_tuple = element.timetuple()
-    timestamp.append(time.mktime(tmp_tuple))
+    element = time.mktime(element.timetuple())
+    timestampList.append(element)
 
-new_csv = pd.read_csv("rt.csv")
+new_csv = pd.read_csv(args.input)
 new_csv = new_csv.drop(['date', 'time'], axis=1)
-new_csv.insert(0, "datetime", timestamp)
+new_csv.insert(0, "datetime", timestampList)
 if args.normalize:
+    print("normalizing")
     temperature = new_csv.loc[:, 'temperature']
     humidity = new_csv.loc[:, 'humidity']
     norm_temperature = []
@@ -68,10 +53,11 @@ with tf.io.TFRecordWriter(args.output) as writer:
         posix_value = row[0]
         temperature_value = row[1]
         humidity_value = row[2]
+        print(type(temperature_value))
         if args.normalize:
-            x_feature = tf.train.Feature(
-                float_list=tf.train.FloatList(value=[posix_value,temperature_value, humidity_value]))
-            mapping = {'float': x_feature}
+            x_feature=tf.train.Feature(int64_list=tf.train.Int64List(value=[int(posix_value)]))
+            y_feature = tf.train.Feature(float_list=tf.train.FloatList(value=[temperature_value, humidity_value]))
+            mapping = {'integer': x_feature,'float': y_feature}
         else:
             x_feature = tf.train.Feature(
                 int64_list=tf.train.Int64List(value=[int(temperature_value), int(humidity_value)]))
