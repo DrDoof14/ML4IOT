@@ -40,17 +40,22 @@ def mfcc(bin, Audio, type):
         total_time = total_time + temp_time
     avg_time = total_time / len(audio)
     avg_mfcc = tot_mfcc / len(audio)
-    print('MFCC ' + type + ' = ', int(avg_time * 1000), ' ms')
+    print('MFCC ' + type + ' = ', avg_time * 1000, ' ms')
     return avg_mfcc
 
 
-frame_length = 256
-frame_step = 128
 
 sampling_rate = 16000
 lower_freq = 20
 upper_freq = 4000
 coefficients = 10
+frame_length = int(0.016*sampling_rate)
+frame_step = int(0.008*sampling_rate)
+
+
+
+
+
 
 DATASET_PATH = './yes_no'
 dir_list = os.listdir(DATASET_PATH)
@@ -59,5 +64,6 @@ for i in dir_list:
     audio.append(tf.io.read_file(DATASET_PATH + '/' + i))
 
 mfcc_slow = mfcc(bin=40, Audio=audio, type='slow')
-mfcc_fast = mfcc(bin=9, Audio=audio, type='fast')
+mfcc_fast = mfcc(bin=32, Audio=audio, type='fast')
+
 SNR(mfcc_slow=mfcc_slow, mfcc_fast=mfcc_fast)
