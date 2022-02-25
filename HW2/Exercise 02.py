@@ -175,9 +175,9 @@ def cnn_model(num_filter, momentom, alpha=1):
     cnn.add(layers.Conv2D(filters=num_filter * alpha, kernel_size=[3, 3], strides=strides, use_bias=False,
                           activation='relu'))
     cnn.add(layers.BatchNormalization(momentum=momentom))
-    cnn.add(layers.Conv2D(filters=num_filter * alpha, kernel_size=[3, 3], strides=[1, 1], use_bias=False,
-                          activation='relu'))
-    cnn.add(layers.BatchNormalization(momentum=momentom))
+#     cnn.add(layers.Conv2D(filters=num_filter * alpha, kernel_size=[3, 3], strides=[1, 1], use_bias=False,
+#                           activation='relu'))
+#     cnn.add(layers.BatchNormalization(momentum=momentom))
     cnn.add(layers.Conv2D(filters=num_filter * alpha, kernel_size=[3, 3], strides=[1, 1], use_bias=False,
                           activation='relu'))
     cnn.add(layers.BatchNormalization(momentum=momentom))
