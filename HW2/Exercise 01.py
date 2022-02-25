@@ -66,7 +66,7 @@ def cnn_model(out_steps, alpha=1):
     cnn = tf.keras.Sequential([
         layers.Conv1D(filters=64 * alpha, kernel_size=(3,), activation='relu'),
         layers.Flatten(),
-        layers.Dense(units=64 * alpha, activation='relu'),
+#         layers.Dense(units=64 * alpha, activation='relu'),
         layers.Dense(units=out_steps * 2)
     ])
     cnn.compile(loss='mae', optimizer='adam')
