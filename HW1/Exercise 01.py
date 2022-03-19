@@ -28,7 +28,7 @@ for i in conv:
 #     temp = i[0] + ' ' + i[1]
 #     element = datetime.datetime.strptime(temp, "%d/%m/%Y %H:%M:%S")
 #     element = time.mktime(element.timetuple())
-    posix_timestamp = np.int64(time.mktime(time.strptime(row[DATE_CN] + " " + row[TIME_CN], "%d/%m/%Y %H:%M:%S")))
+    posix_timestamp = time.mktime(time.strptime(i[0] + " " + i[1], "%d/%m/%Y %H:%M:%S"))
     timestampList.append(posix_timestamp)
 
 new_csv = pd.read_csv(args.input)
@@ -75,9 +75,9 @@ with tf.io.TFRecordWriter(args.output) as writer:
 
         # int------------------------------------------------------------------------------
 
-        posix_value = row[0]
-        temperature_value = row[1]
-        humidity_value = row[2]
+        posix_value = np.int64(row[0])
+        temperature_value = np.int64(row[1])
+        humidity_value = np.int64(row[2])
         mapping["datetime"] = tf.train.Feature(int64_list=tf.train.Int64List(value=[posix_value]))
         if args.normalize:
             
