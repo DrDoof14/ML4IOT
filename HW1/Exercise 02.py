@@ -64,6 +64,6 @@ for i in dir_list:
     audio.append(tf.io.read_file(DATASET_PATH + '/' + i))
 
 mfcc_slow = mfcc(bin=40, Audio=audio, type='slow')
-mfcc_fast = mfcc(bin=32, Audio=audio, type='fast')
+mfcc_fast = mfcc(bin=13, Audio=audio, type='fast')
 
 SNR(mfcc_slow=mfcc_slow, mfcc_fast=mfcc_fast)
