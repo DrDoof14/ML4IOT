@@ -84,18 +84,12 @@ with tf.io.TFRecordWriter(args.output) as writer:
             mapping["temperature"] = tf.train.Feature(float_list=tf.train.FloatList(value=[temperature_value]))
             mapping["humidity"] = tf.train.Feature(float_list=tf.train.FloatList(value=[humidity_value]))
             
-#             x_feature = tf.train.Feature(
-#                 int64_list=tf.train.Int64List(value=[posix_value, temperature_value, humidity_value]))
-#             mapping = {'int': x_feature}  # we don't use the y_feature since we only have one datatype
 
 
 
         else:
             mapping["temperature"] = tf.train.Feature(int64_list=tf.train.Int64List(value=[temperature_value]))
             mapping["humidity"] = tf.train.Feature(int64_list=tf.train.Int64List(value=[humidity_value]))
-#             x_feature = tf.train.Feature(
-#                 int64_list=tf.train.Int64List(value=[posix_value, temperature_value, humidity_value]))
-#             mapping = {'int': x_feature}  # we don't use the y_feature since we only have one datatype
 
         example = tf.train.Example(features=tf.train.Features(feature=mapping))
         writer.write(example.SerializeToString())
