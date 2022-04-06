@@ -17,6 +17,6 @@ class Subscriber(DoSomething):
 if __name__ == "__main__":
     test = Subscriber("Monitoring Client")
     test.run()
-    test.myMqttClient.mySubscribe("ML4IOT")
+    test.myMqttClient.mySubscribe('ML4IOT/2022/289456/alert')
     while True:
         time.sleep(1)
