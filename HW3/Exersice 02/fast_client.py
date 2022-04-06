@@ -85,8 +85,16 @@ for i in range(len(test_files)):
     difference = sorted_predictions[0] - sorted_predictions[1]
 
     if difference < 4 and max_prediction < 65:
+        
         t = tf_audio.numpy().tolist()
-        msg = {'Audio': t}
+        msg = {
+                    "bn": 'rpi_audio',
+                    "e": 
+                        {'n': 'Audio',
+                         "u": "dB",
+                         't': dt_string,
+                         'v': t}}
+
         CommunicationCost += sys.getsizeof(json.dumps(msg))
         try:
             req = requests.put(url, json=msg)
