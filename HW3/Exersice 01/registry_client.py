@@ -32,7 +32,7 @@ def predict(model_name='cnn.tflite'):
     tthres = 0.1
     hthres = 0.2
     url_predict = url + '/{}?model={}&tthres={}&hthres={}'.format('predict', model_name, tthres, hthres)
-    req = requests.put(url_predict)
+    req = requests.get(url_predict)
     if req.status_code != 200:
         print('Error:', req.status_code)
 
