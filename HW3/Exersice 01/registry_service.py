@@ -100,9 +100,9 @@ class Predict:
                     "e": [
                         {'n': 'Temperature', "u": "Cel",
                          't': dt_string,
-                         'v': temperature_list[5]},
+                         'v': str(temperature_list[5])},
                         {'n': 'Temperature', "u": "Cel", 't': dt_string,
-                         'v': predict_result[0][0]}]
+                         'v': str(predict_result[0][0])}]
                 }
 
             self.publisher.myMqttClient.myPublish('ML4IOT/2022/289456/alert', json.dumps(msg))
@@ -114,9 +114,9 @@ class Predict:
                     "e": [
                         {'n': 'Humidity', "u": "%",
                          't': dt_string,
-                         'v': humidity_list[5]},
+                         'v': str(humidity_list[5])},
                         {'n': 'Humidity', "u": "%", 't': dt_string,
-                         'v': predict_result[0][1]}]
+                         'v': str(predict_result[0][1])}]
                 }
                 self.publisher.myMqttClient.myPublish('ML4IOT/2022/289456/alert', json.dumps(msg))
 
