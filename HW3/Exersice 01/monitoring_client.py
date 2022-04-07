@@ -11,7 +11,7 @@ class Subscriber(DoSomething):
                                                                input_json['e'][0]['v'], input_json['e'][0]['u']))
         
 
-
+        
 if __name__ == "__main__":
     test = Subscriber("Monitoring Client")
     test.run()
