@@ -8,9 +8,9 @@ import time
 
 url = 'http://127.0.0.1:8080/predict'
 sampling_rate = 16000
-frame_length = int(0.04 * sampling_rate)
-frame_step = int(0.02 * sampling_rate)
-num_mel_bins = 28
+frame_length = 500
+frame_step = 322
+num_mel_bins = 25
 lower_freq = 20
 upper_freq = 4000
 coefficients = 10
@@ -84,7 +84,7 @@ for i in range(len(test_files)):
     sorted_predictions = sorted(list_of_predictions, reverse=True)
     difference = sorted_predictions[0] - sorted_predictions[1]
 
-    if difference < 4 and max_prediction < 65:
+    if difference < 2 and max_prediction < 65:
         
         t = tf_audio.numpy().tolist()
         msg = {
