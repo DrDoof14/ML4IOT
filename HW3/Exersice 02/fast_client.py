@@ -3,6 +3,7 @@ import sys
 import requests
 import tensorflow as tf
 import numpy as np
+from datetime import datetime
 from scipy.special import softmax
 import time
 
@@ -83,7 +84,8 @@ for i in range(len(test_files)):
     list_of_predictions = list(map(lambda x: float("{:.8f}".format(float(x * 100))), softmax_predict_result))
     sorted_predictions = sorted(list_of_predictions, reverse=True)
     difference = sorted_predictions[0] - sorted_predictions[1]
-
+    now = datetime.now()
+    dt_string = now.strftime("(%d/%m/%Y %H:%M:%S)")
     if difference < 2 and max_prediction < 65:
         
         t = tf_audio.numpy().tolist()
