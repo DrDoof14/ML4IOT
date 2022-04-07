@@ -7,7 +7,7 @@ from datetime import datetime
 from scipy.special import softmax
 import time
 
-url = 'http://127.0.0.1:8080/predict'
+url = 'http://192.168.1.127:8080/predict'  # we have to use the laptop/PC IP address
 sampling_rate = 16000
 frame_length = 500
 frame_step = 322
