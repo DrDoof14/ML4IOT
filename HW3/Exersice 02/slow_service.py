@@ -60,8 +60,8 @@ class SLowService:
 if __name__ == '__main__':
     # conf probably needs modification
     #have to find the IP for the device you are using as the server 
-    # cherrypy.config.update({'server.socket_host': '192.168.1.127'})
-    # cherrypy.config.update({'server.socket_port': 8080})
+    cherrypy.config.update({'server.socket_host': '192.168.1.127'})
+    cherrypy.config.update({'server.socket_port': 8080})
     conf = {
         '/': {
             'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
