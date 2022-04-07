@@ -47,7 +47,7 @@ class SLowService:
     def PUT(self, **query):
         body = cherrypy.request.body.read()
         body = json.loads(body)
-        audio = body.get('Audio')
+        audio = body['e']['v']
         audio_tensor = tf.convert_to_tensor(audio, dtype=tf.float32)
         self.interpreter.set_tensor(self.input_details[0]['index'], self.mfcc(audio_tensor))
         self.interpreter.invoke()
