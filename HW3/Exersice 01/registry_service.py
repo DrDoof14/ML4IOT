@@ -46,7 +46,8 @@ class ListModels:
         for i in onlyFiles:
             if i.endswith('.tflite'):
                 tfModels.append(i)
-        return json.dumps(tfModels)
+        response_body={'Models':tfModels}
+        return json.dumps(response_body)
 
 
 class Predict:
