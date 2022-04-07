@@ -6,12 +6,10 @@ from DoSomething import DoSomething
 class Subscriber(DoSomething):
     def notify(self, topic, msg):
         input_json = json.loads(msg)
-        if input_json['e'][0]['n'] == 'Temperature':
-            print("{} {} Alert: Predicted={}°C Actual={}°C".format(input_json['e'][0]['t'], input_json['e'][0]['n'],
-                                                                   input_json['e'][1]['v'], input_json['e'][0]['v']))
-        elif input_json['e'][0]['n'] == 'Humidity':
-            print("{} {} Alert: Predicted={}% Actual={}%".format(input_json['e'][0]['t'], input_json['e'][0]['n'],
-                                                                 input_json['e'][1]['v'], input_json['e'][0]['v']))
+        print("{} {} Alert: Predicted={}{} Actual={}{}".format(input_json['e'][0]['t'], input_json['e'][0]['n'],
+                                                               input_json['e'][1]['v'], input_json['e'][0]['u'],
+                                                               input_json['e'][0]['v'], input_json['e'][0]['u']))
+        
 
 
 if __name__ == "__main__":
