@@ -93,22 +93,18 @@ class Predict:
             now = datetime.now()
             dt_string = now.strftime("(%d/%m/%Y %H:%M:%S)")
             if abs(predict_result[0][0] - temperature_list[5]) > tthres:
-                # |msg = {'dateTime': dt_string, 'Quantity': 'Temperature', 'Predicted': predict_result[0][0],
-                #                        'Actual': temperature_list[5]}
                 msg = {
                     "bn": 'rpi_temp',
                     "e": [
-                        {'n': 'Temperature', "u": "Cel",
+                        {'n': 'Temperature', "u": "°C",
                          't': dt_string,
                          'v': str(temperature_list[5])},
-                        {'n': 'Temperature', "u": "Cel", 't': dt_string,
+                        {'n': 'Temperature', "u": "°C", 't': dt_string,
                          'v': str(predict_result[0][0])}]
                 }
 
             self.publisher.myMqttClient.myPublish('ML4IOT/2022/289456/alert', json.dumps(msg))
             if abs(predict_result[0][1] - humidity_list[5]) > hthres:
-                #                 msg = {'dateTime': dt_string, 'Quantity': 'Humidity', 'Predicted': predict_result[0][1],
-                #                        'Actual': humidity_list[5]}
                 msg = {
                     "bn": 'rpi_hum',
                     "e": [
